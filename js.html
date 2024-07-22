@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elegant Calendar</title>
+</head>
+<body>
+    <div id="calendar-container"></div>
+
+    <script>
+        function addStyles() {
+            const style = document.createElement('style');
+            style.innerHTML = `
+                body {
+                    background-color: #2C2F48;
+                    color: white;
+                    font-family: Arial, sans-serif;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    margin: 0;
+                }
+                .calendar-container {
+                    width: 320px;
+                    background-color: #3E416D;
+                    border-radius: 10px;
+                    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+                    text-align: center;
+                    padding: 20px;
+                }
+                .calendar-header h1 {
+                    font-size: 1.2em;
+                    margin: 0 0 10px;
+                }
+                .progress-bar-container {
+                    height: 10px;
+                    background: #ccc;
+                    border-radius: 5px;
+                    overflow: hidden;
+                    margin-bottom: 20px;
+                }
+                .progress-bar {
+                    width: 50%;
+                    height: 100%;
+                    background: #9DB6E1;
+                }
+                .message {
+                    display: none;
+                    margin: 10px 0;
+                    padding: 10px;
+                    border-radius: 5px;
+                }
+                .success-message {
+                    background: green;
+                    color: white;
+                }
+                .warning-message {
+                    background: orange;
+                    color: white;
+                }
+                .month-year {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 10px;
+                }
+                .month-year span {
+                    cursor: pointer;
+                }
+                .calendar {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+                .calendar th, .calendar td {
+                    border: 1px solid #4A4C7A;
+                    text-align: center;
+                    padding: 10px;
+                    color: white;
+                }
+                .inactive {
+                    background-color: #4A4C7A;
+                }
+                .active {
+                    background-color: #7E81A7;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        function createCalendar() {
+            const calendarContainer = document.getElementById('calendar-container');
+
+            const calendarHeader = document.createElement('div');
+            calendarHeader.className = 'calendar-header';
+            calendarContainer.appendChild(calendarHeader);
+
+            const h1 = document.createElement('h1');
+            h1.textContent = 'Select your Appointment Date';
+            calendarHeader.appendChild(h1);
+
+            const progressBarContainer = document.createElement('div');
+            progressBarContainer.className = 'progress-bar-container';
+            calendarHeader.appendChild(progressBarContainer);
+
+            const progressBar = document.createElement('div');
+            progressBar.className = 'progress-bar';
+            progressBar.id = 'progressBar';
+            progressBarContainer.appendChild(progressBar);
+
+            const successMessage = document.createElement('div');
+            successMessage.className = 'message success-message';
+            successMessage.id = 'successMessage';
+            successMessage.textContent = 'Appointment submitted successfully!';
+            calendarHeader.appendChild(successMessage);
+
+            const warningMessage = document.createElement('div');
+            warningMessage.className = 'message warning-message';
+            warningMessage.id = 'warningMessage';
+            warningMessage.textContent = 'Please fill in all fields!';
+            calendarHeader.appendChild(warningMessage);
+
+            const monthYear = document.createElement('div');
+            monthYear.className = 'month-year';
+            calendarHeader.appendChild(monthYear);
+
+            const prev = document.createElement('span');
+            prev.className = 'prev';
+            prev.innerHTML = '&#8249;';
+            monthYear.appendChild(prev);
+
+            const month = document.createElement('span');
+            month.className = 'month';
+            month.textContent = 'June';
+            monthYear.appendChild(month);
+
+            const year = document.createElement('span');
+            year.className = 'year';
+            year.textContent = '2024';
+            monthYear.appendChild(year);
+
+            const next = document.createElement('span');
+            next.className = 'next';
+            next.innerHTML = '&#8250;';
+            monthYear.appendChild(next);
+
+            const calendar = document.createElement('table');
+            calendar.className = 'calendar';
+            calendarContainer.appendChild(calendar);
+
+            const thead = document.createElement('thead');
+            calendar.appendChild(thead);
+
+            const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const tr = document.createElement('tr');
+            daysOfWeek.forEach(day => {
+                const th = document.createElement('th');
+                th.textContent = day;
+                tr.appendChild(th);
+            });
+            thead.appendChild(tr);
+
+            const tbody = document.createElement('tbody');
+            calendar.appendChild(tbody);
+
+            const daysInMonth = [
+                ['inactive', 'inactive', 'inactive', 'inactive', 'inactive', 'inactive', 'active'],
+                ['active', 'active', 'active', 'active', 'active', 'active', 'active'],
+                ['active', 'active', 'active', 'active', 'active', 'active', 'active'],
+                ['active', 'active', 'active', 'active', 'active', 'active', 'active'],
+                ['active', 'active', 'active', 'active', 'active', 'active', 'active'],
+                ['active', 'inactive', 'inactive', 'inactive', 'inactive', 'inactive', 'inactive']
+            ];
+
+            daysInMonth.forEach((week, weekIndex) => {
+                const tr = document.createElement('tr');
+                week.forEach((status, dayIndex) => {
+                    const td = document.createElement('td');
+                    td.className = status;
+                    td.textContent = weekIndex * 7 + dayIndex + 1;
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+        }
+
+        addStyles();
+        createCalendar();
+    </script>
+</body>
+</html>

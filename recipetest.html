@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-sm mx-auto bg-white shadow-md rounded-lg overflow-hidden">
+        <div class="px-6 py-4">
+            <div class="font-bold text-xl mb-2 text-white bg-pink-500 p-2 rounded">Appointment details:</div>
+            <ul id="appointmentDetails">
+                <li id="idLine"><strong>ID:</strong> <span class="editable">102</span></li>
+                <li id="relatedOrderLine"><strong>Related Order:</strong> <a href="#" class="editable">#123</a></li>
+                <li id="userNameLine"><strong>User name:</strong> <span class="editable">Darla Peterson</span></li>
+                <li id="userIdLine"><strong>User ID:</strong> <span class="editable">156</span></li>
+                <li id="phoneLine"><strong>Phone:</strong> <span class="editable">+31 (045) 323 80 48</span></li>
+                <li id="emailLine"><strong>User e-mail:</strong> <span class="editable">darlapeterson@gmail.com</span></li>
+                <li id="dateLine"><strong>Date:</strong> <span class="editable">08/03/2022</span></li>
+                <li id="startTimeLine"><strong>Start time:</strong> <span class="editable">11:00</span></li>
+                <li id="endTimeLine"><strong>End time:</strong> <span class="editable">12:30</span></li>
+                <li id="serviceLine"><strong>Service:</strong> <span class="editable">Gynecology</span></li>
+                <li id="providerLine"><strong>Provider:</strong> <span class="editable">Dr. Madison Moore</span></li>
+                <li id="statusLine"><strong>Status:</strong> <span class="editable">Pending</span></li>
+            </ul>
+            <div class="mt-4 flex space-x-3">
+                <button id="editBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit</button>
+                <button id="deleteBtn" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Delete</button>
+                <button id="saveBtn" style="display: none;" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Save</button>
+                <button id="cancelBtn" style="display: none;" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Cancel</button>
+                <button id="downloadReceipt" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Download Receipt</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const editBtn = document.getElementById('editBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+        const downloadBtn = document.getElementById('downloadReceipt');
+
+        editBtn.addEventListener('click', function() {
+            convertToInputFields();
+            toggleButtons();
+        });
+
+        saveBtn.addEventListener('click', function() {
+            saveAndConvertToText();
+            toggleButtons();
+        });
+
+        cancelBtn.addEventListener('click', function() {
+            convertToText();
+            toggleButtons();
+        });
+
+        deleteBtn.addEventListener('click', function() {
+            if (confirm('Are you sure you want to delete this appointment?')) {
+                document.getElementById('appointmentDetails').innerHTML = '';
+                alert('Appointment deleted.');
+            }
+        });
+
+        downloadBtn.addEventListener('click', function() {
+            const data = `
+                ID: ${document.getElementById('idLine').innerText}\n
+                Related Order: ${document.getElementById('relatedOrderLine').innerText}\n
+                User name: ${document.getElementById('userNameLine').innerText}\n
+                User ID: ${document.getElementById('userIdLine').innerText}\n
+                Phone: ${document.getElementById('phoneLine').innerText}\n
+                User e-mail: ${document.getElementById('emailLine').innerText}\n
+                Date: ${document.getElementById('dateLine').innerText}\n
+                Start time: ${document.getElementById('startTimeLine').innerText}\n
+                End time: ${document.getElementById('endTimeLine').innerText}\n
+                Service: ${document.getElementById('serviceLine').innerText}\n
+                Provider: ${document.getElementById('providerLine').innerText}\n
+                Status: ${document.getElementById('statusLine').innerText}\n
+            `;
+            
+            const blob = new Blob([data], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'receipt.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        function convertToInputFields() {
+            const fields = document.querySelectorAll('.editable');
+            fields.forEach(field => {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = field.innerText;
+                input.className = 'border rounded p-1';
+                field.parentNode.replaceChild(input, field);
+            });
+        }
+
+        function saveAndConvertToText() {
+            const fields = document.querySelectorAll('input');
+            fields.forEach(input => {
+                const span = document.createElement('span');
+                span.className = 'editable';
+                span.innerText = input.value;
+                input.parentNode.replaceChild(span, input);
+            });
+        }
+
+        function convertToText() {
+            const fields = document.querySelectorAll('input');
+            fields.forEach(input => {
+                const span = document.createElement('span');
+                span.className = 'editable';
+                span.innerText = input.value;
+                input.parentNode.replaceChild(span, input);
+            });
+        }
+
+        function toggleButtons() {
+            if (editBtn.style.display === 'none') {
+                editBtn.style.display = 'inline-block';
+                saveBtn.style.display = 'none';
+                cancelBtn.style.display = 'none';
+            } else {
+                editBtn.style.display = 'none';
+                saveBtn.style.display = 'inline-block';
+                cancelBtn.style.display = 'inline-block';
+            }
+        }
+    </script>
+</body>
+</html>

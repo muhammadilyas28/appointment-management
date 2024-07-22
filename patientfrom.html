@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Appointment Form</title>
+    <link rel="stylesheet" href="patientfrom.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Patient Appointment Form</h2>
+        <form id="appointmentForm" onsubmit="submitForm(event)">
+            <label for="patientName">Patient Name</label>
+            <input type="text" id="patientName" name="patientName" required>
+
+            <label for="appointmentDate">Appointment Date</label>
+            <input type="date" id="appointmentDate" name="appointmentDate" required>
+
+            <label for="appointmentTime">Appointment Time</label>
+            <input type="time" id="appointmentTime" name="appointmentTime" required>
+
+            <label for="doctor">Doctor</label>
+            <select id="doctor" name="doctor" required>
+                <option value="">Select Doctor</option>
+                <option value="Dr. Smith">Dr. Smith</option>
+                <option value="Dr. Johnson">Dr. Johnson</option>
+                <option value="Dr. Brown">Dr. Brown</option>
+            </select>
+
+            <label for="comments">Comments (optional)</label>
+            <textarea id="comments" name="comments" rows="4"></textarea>
+
+            <button type="submit">Submit Appointment</button>
+        </form>
+    </div>
+
+    <script src="patientfrom.js"></script>
+</body>
+</html>
