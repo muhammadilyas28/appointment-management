@@ -1,4 +1,4 @@
-// / -------------------Recipt File data Code------------------------
+// / -------------------Receipt File data Code------------------------
 
 function createReceipt() {
     const receiptFile = document.createElement('div');
@@ -75,12 +75,79 @@ function createReceipt() {
     document.body.appendChild(receiptFile);
 
     // Event listeners
-
     document.getElementById('editBtn').addEventListener('click', () => toggleEdit(true));
     document.getElementById('saveBtn').addEventListener('click', saveDetails);
     document.getElementById('cancelBtn').addEventListener('click', () => toggleEdit(false));
     document.getElementById('deleteBtn').addEventListener('click', deleteReceipt);
     document.getElementById('downloadReceipt').addEventListener('click', downloadReceipt);
+}
+
+// Initialize IndexedDB
+let db;
+function initDB() {
+    const request = indexedDB.open('appointmentDB', 1);
+
+    request.onupgradeneeded = (event) => {
+        db = event.target.result;
+        const objectStore = db.createObjectStore('appointments', { keyPath: 'id', autoIncrement: true });
+        objectStore.createIndex('patient_Name', 'patient_Name', { unique: false });
+    };
+
+    request.onsuccess = (event) => {
+        db = event.target.result;
+        populateDetails(); // Populate details after successful DB initialization
+    };
+
+    request.onerror = (event) => {
+        console.error('Database error: ', event.target.errorCode);
+    };
+}
+
+// Save receipt details to IndexedDB
+function saveDetails() {
+    const appointmentDetails = {};
+
+    document.querySelectorAll('.editable').forEach(span => {
+        appointmentDetails[span.id] = span.textContent;
+    });
+
+    const transaction = db.transaction(['appointments'], 'readwrite');
+    const objectStore = transaction.objectStore('appointments');
+    const request = objectStore.add(appointmentDetails);
+
+    request.onsuccess = () => {
+        alert('Details saved!');
+    };
+
+    request.onerror = () => {
+        alert('Error saving details.');
+    };
+
+    toggleEdit(false);
+}
+
+// Retrieve and populate receipt details from IndexedDB
+function populateDetails() {
+    const transaction = db.transaction(['appointments'], 'readonly');
+    const objectStore = transaction.objectStore('appointments');
+    const request = objectStore.getAll();
+
+    request.onsuccess = (event) => {
+        const appointments = event.target.result;
+        if (appointments.length > 0) {
+            const lastAppointment = appointments[appointments.length - 1];
+            Object.keys(lastAppointment).forEach(key => {
+                const span = document.getElementById(key);
+                if (span) {
+                    span.textContent = lastAppointment[key];
+                }
+            });
+        }
+    };
+
+    request.onerror = (event) => {
+        console.error('Error retrieving details: ', event.target.errorCode);
+    };
 }
 
 function toggleEdit(enable) {
@@ -102,15 +169,19 @@ function toggleEdit(enable) {
     document.getElementById('cancelBtn').style.display = enable ? 'inline-block' : 'none';
 }
 
-function saveDetails() {
-    toggleEdit(false);
-    // Additional save logic can be added here
-    alert('Details saved!');
-}
-
 function deleteReceipt() {
     if (confirm('Are you sure you want to delete this receipt?')) {
-        document.getElementById('recipt_file').remove();
+        const transaction = db.transaction(['appointments'], 'readwrite');
+        const objectStore = transaction.objectStore('appointments');
+        const request = objectStore.clear();
+
+        request.onsuccess = () => {
+            document.getElementById('recipt_file').remove();
+        };
+
+        request.onerror = () => {
+            alert('Error deleting receipt.');
+        };
     }
 }
 
@@ -129,16 +200,17 @@ function downloadReceipt() {
 
     details.forEach(detail => {
         y += 10;
-        // const strong = detail.querySelector('strong').textContent;
-        // const span = detail.querySelector('span').textContent;
-        // doc.text(`${strong} ${span}`, 10, y);
+        const strong = detail.querySelector('strong').textContent;
+        const span = detail.querySelector('span').textContent;
+        doc.text(`${strong} ${span}`, 10, y);
     });
 
     doc.save('receipt.pdf');
 }
 
+initDB();
 createReceipt();
 
-export default{
+export default {
     createReceipt
 }
